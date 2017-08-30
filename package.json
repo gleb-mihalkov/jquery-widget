@@ -1,0 +1,36 @@
+{
+  "name": "jquery-widget",
+  "version": "1.0.0",
+  "description": "Добавляет механизм событий для объектов.",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "compile_rename": "mkdir -p ./dist && cp src/*.js ./dist/jquery.widget.js",
+    "compile_compress": "uglifyjs dist/*.js -m -o ./dist/jquery.widget.min.js",
+    "compile": "npm run compile_rename && npm run compile_compress",
+    "docs": "mkdir -p ./docs && jsdoc -r ./src -d ./docs -t ./node_modules/docdash --readme ./README.md",
+    "build": "npm run compile && npm run docs",
+    "test": "php -S localhost:8000",
+    "docs_view": "php -S localhost:8000 -t ./docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gleb-mihalkov/jquery-widget.git"
+  },
+  "keywords": [
+    "jquery"
+  ],
+  "author": "gleb-mihalkov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gleb-mihalkov/jquery-widget/issues"
+  },
+  "homepage": "https://github.com/gleb-mihalkov/jquery-widget#readme",
+  "devDependencies": {
+    "docdash": "^0.4.0",
+    "jsdoc": "^3.5.3",
+    "uglify-js": "^3.0.27"
+  }
+}

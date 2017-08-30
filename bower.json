@@ -1,0 +1,24 @@
+{
+  "name": "jquery-widget",
+  "homepage": "https://github.com/gleb-mihalkov/jquery-widget",
+  "authors": [
+    "gleb-mihalkov <gleb.mihalkov.work@yandex.ru>"
+  ],
+  "description": "Базовый класс виджета jQuery.",
+  "main": "dist/jquery.widget.js",
+  "keywords": [
+    "jquery"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": ">=2.0.0",
+    "jquery-class": "https://github.com/gleb-mihalkov/jquery-class.git"
+  }
+}
