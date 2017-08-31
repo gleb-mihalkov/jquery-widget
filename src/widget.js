@@ -11,6 +11,56 @@
   }
 
   /**
+   * Вызывает метод виджета для указанного элемента с указанными параметрами.
+   * @param  {Function} type   Класс виджета.
+   * @param  {String}   name   Имя плагина.
+   * @param  {String}   def    Имя метода по умолчанию.
+   * @param  {jQuery}   scope  Набор jQuery из одного элемента.
+   * @param  {Array}    params Аргументы метода.
+   * @return {Mixed}           Значение, возвращаемое методом виджета.
+   */
+  function pluginExecute(type, name, def, scope, params) {
+    var args = Array.prototype.slice.call(params, 0);
+
+    var isMethod = args[0] && typeof(args[0]) === 'string';
+    var method = isMethod ? args.splice(0, 1) : [def];
+    method = method[0];
+
+    var widget = scope.data(name);
+    var isCreate = !(widget instanceof type);
+
+    if (isCreate) {
+      var opts = params[0];
+      opts = opts && typeof(opts) === 'object' ? opts : {};
+
+      widget = new type(scope, opts);
+      scope.data(name, widget);
+    }
+
+    var isInit = method === 'constructor';
+    if (isInit) return;
+
+    var agent = method[0] != '_' ? widget[method] : undefined;
+
+    if (agent !== undefined) {
+      var isFunc = typeof(agent) === 'function';
+
+      if (isFunc) {
+        return agent.apply(widget, args);
+      }
+      
+      var isGet = args.length == 0;
+      if (isGet) return agent;
+
+      widget[method] = args[0];
+      return;
+    }
+
+    var error = "Method '"+method+"' doesn't exists in the plugin '"+name+"'.";
+    throw new Error(error);
+  }
+
+  /**
    * Создает функцию плагина jQuery.
    * @param  {Function} type Класс, который следует обернуть в плагин.
    * @param  {String}   name Имя плагина.
@@ -18,52 +68,16 @@
    * @return {Function}      Функция плагина.
    */
   function createPlugin(type, name, def) {
-
     return function() {
-      var scope = this.first();
+      for (var i = 0; i < this.length; i++) {
+        var item = this.eq(i);
+        var result = pluginExecute(type, name, def, item, arguments);
 
-      var isEmpty = scope.length == 0;
-      if (isEmpty) return this;
-
-      var args = Array.prototype.slice.call(arguments, 0);
-
-      var isMethod = args[0] && typeof(args[0]) === 'string';
-      var method = isMethod ? args.splice(0, 1) : [def];
-      method = method[0];
-
-      var widget = scope.data(name);
-      var isCreate = widget == null || typeof(widget) !== 'object';
-
-      if (isCreate) {
-        var opts = arguments[0];
-        opts = opts && typeof(opts) === 'object' ? opts : {};
-
-        widget = new type(scope, opts);
-        scope.data(name, widget);
+        if (result === undefined) continue;
+        return result;
       }
 
-      var isInit = method === 'constructor';
-      if (isInit) return this;
-
-      var agent = method[0] != '_' ? widget[method] : undefined;
-
-      if (agent !== undefined) {
-        var isFunc = typeof(agent) === 'function';
-
-        if (isFunc) {
-          var result = agent.apply(widget, args);
-          return result === undefined ? this : result;
-        }
-        
-        var isGet = args.length == 0;
-        if (isGet) return agent;
-
-        widget[method] = args[0];
-        return this;
-      }
-
-      var error = "Method '" + method + "' doesn't exists in the plugin '" + name + "'";
-      throw new Error(error);
+      return this;
     };
   }
 
