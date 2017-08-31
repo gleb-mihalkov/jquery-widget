@@ -30,7 +30,7 @@
     var isCreate = !(widget instanceof type);
 
     if (isCreate) {
-      var opts = params[0];
+      var opts = method !== 'constructor' ? {} : params[0];
       opts = opts && typeof(opts) === 'object' ? opts : {};
 
       widget = new type(scope, opts);
