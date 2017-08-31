@@ -26,19 +26,20 @@
     var method = isMethod ? args.splice(0, 1) : [def];
     method = method[0];
 
+    var isCtor = method === 'constructor';
+
     var widget = scope.data(name);
     var isCreate = !(widget instanceof type);
 
     if (isCreate) {
-      var opts = method !== 'constructor' ? {} : params[0];
+      var opts = isCtor ? params[0] : {};
       opts = opts && typeof(opts) === 'object' ? opts : {};
 
       widget = new type(scope, opts);
       scope.data(name, widget);
     }
-
-    var isInit = method === 'constructor';
-    if (isInit) return;
+    
+    if (isCtor) return;
 
     var agent = method[0] != '_' ? widget[method] : undefined;
 
